@@ -1,0 +1,50 @@
+﻿@using CodeRecruit.Constants
+@model IEnumerable<JobPosting>
+
+<h1 class="text-center mb-3">All Job Postings</h1>
+
+<div class="list-group">
+    @foreach (var jobposting in Model)
+    {
+        <div class="list-group-item mb-2" id="job-posting-@jobposting.Id">
+            <h3>@jobposting.Title</h3>
+            <p>@jobposting.Description</p>
+            <p><strong>Company:</strong> @jobposting.Company</p>
+            <p><strong>Location:</strong> @jobposting.Location</p>
+            <p><strong>Posted Date:</strong> @jobposting.PostedDate.ToShortTimeString()</p>
+
+            @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.Employer))
+            {
+                <div>
+                    <button onclick="deleteJobPosting(@jobposting.Id)" class="btn btn-sm btn-danger">Delete</button>
+                </div>
+            }
+
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function deleteJobPosting(id){
+            if (confirm("Are you sure you want to delete this job posting? ")){
+                // url
+                // type - delete
+                // success statement - visually remove the job posting
+                // fail call - show an error message
+                $.ajax({
+                    // Builing Url - Delete action in the JobPostings Controller with job posting id we are deleting
+                    url:"@Url.Action("Delete", "JobPostings")/" + id,
+                    type: "delete",
+                    success: function(result){
+                        // Remove the HTML element associated with the job posting that has been removed
+                        $("#job-posting-" + id).remove();
+                    },
+                    error: function(err){
+                        alert("An error occurred", err)
+                    }
+                });
+            }
+        }
+    </script>
+}
